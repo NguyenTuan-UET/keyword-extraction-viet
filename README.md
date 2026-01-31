@@ -1,10 +1,5 @@
----
-tags:
-- keyword-extraction
-language:
-- vi
----
-
+# KeyBert_VietNam
+A version for extracting keywords from Vietnamese documents, inspired by KeyBERT.
 
 # <a name="introduction"></a>  KeyBERTVi - Keyword Extraction for Vietnamese language
 
@@ -27,15 +22,13 @@ Inspired by [KeyBERT](https://github.com/MaartenGr/KeyBERT), KeyBERTVi implement
 This implementation took inspiration from the simple yet intuitive and powerful method of [KeyBERT](https://github.com/MaartenGr/KeyBERT/), applied for the Vietnamese language. PhoBERT are used to generate both document-level embeddings and word-level embeddings for extracted N-grams. Cosine similarity is then used to compute which N-grams are most similar to the document-level embedding, thus can be perceived as most representative of the document. 
 Preprocessing catered to the Vietnamese language was applied. 
 
-Test with your own documents at [KeyBERTVi Space](https://huggingface.co/spaces/tpha4308/keybertvi-app). 
-
 <a name="gettingstarted"/></a>
 ## 2. Getting Started
 <a name="installation"/></a>
 ###  2.1. Setting up
 
 ```bash
-  git clone https://huggingface.co/tpha4308/keyword-extraction-viet
+  git clone https://github.com/NguyenTuan-UET/KeyBert_VietNam.git
 ```
 
 You can use existing pre-trained models in the repo or download your own and put them in `pretrained-models` folder. 
@@ -75,20 +68,47 @@ As [PhoBERT](https://huggingface.co/vinai/phobert-base) requires [VnCoreNLP](htt
 ```
 
 ```python
-  title = "Truyền thuyết và hiện tại Thành Cổ Loa"
+  title = "Giới thiệu về UET"
   text = """
-            Nhắc đến Cổ Loa, người ta nghĩ ngay đến truyền thuyết về An Dương Vương được thần Kim Quy bày cho cách xây thành, về chiếc lẫy nỏ thần làm từ móng chân rùa thần và mối tình bi thương Mỵ Châu – Trọng Thủy. Đằng sau những câu chuyện thiên về tâm linh ấy, thế hệ con cháu còn khám phá được những giá trị khảo cổ to lớn của Cổ Loa.
-            Khu di tích Cổ Loa cách trung – tâm Hà Nội 17km thuộc huyện Đông Anh, Hà Nội, có diện tích bảo tồn gần 500ha được coi là địa chỉ văn hóa đặc biệt của thủ đô và cả nước. Cổ Loa có hàng loạt di chỉ khảo cổ học đã được phát hiện, phản ánh quá trình phát triển liên tục của dân tộc ta từ sơ khai qua các thời kỳ đồ đồng, đồ đá và đồ sắt mà đỉnh cao là văn hóa Đông Sơn, vẫn được coi là nền văn minh sông Hồng thời kỳ tiền sử của dân tộc Việt Nam.
-            Cổ Loa từng là kinh đô của nhà nước Âu Lạc thời kỳ An Dương Vương (thế kỷ III TCN) và của nước Đại Việt thời Ngô Quyền (thế kỷ X) mà thành Cổ Loa là một di tích minh chứng còn lại cho đến ngày nay. Thành Cổ Loa được các nhà khảo cổ học đánh giá là “tòa thành cổ nhất, quy mô lớn vào bậc nhất, cấu trúc cũng thuộc loại độc đáo nhất trong lịch sử xây dựng thành lũy của người Việt cổ”.
+            Trường Đại học Công nghệ, Đại học Quốc gia Hà Nội được thành lập 
+            theo Quyết định số 92/2004/QĐ-TTg ngày 25/05/2004 của Thủ tướng Chính phủ 
+            trên cơ sở Khoa Công nghệ và Trung tâm Hợp tác Đào tạo và Bồi dưỡng Cơ học trực thuộc Đại học Quốc gia Hà Nội với hai nhiệm vụ như sau:
+            1. Đào tạo nguồn nhân lực trình độ đại học, sau đại học và bồi dưỡng nhân tài thuộc lĩnh vực khoa học, công nghệ;
+            2. Nghiên cứu và triển khai ứng dụng khoa học, công nghệ đáp ứng nhu cầu phát triển kinh tế – xã hội.
+            Sứ mạng của Nhà trường là đào tạo nguồn nhân lực chất lượng cao, trình độ cao và bồi dưỡng nhân tài; 
+            nghiên cứu phát triển và ứng dụng các lĩnh vực khoa học công nghệ tiên tiến mũi nhọn trên cơ sở phát huy 
+            thế mạnh về Công nghệ thông tin và Truyền thông. Nhà trường cũng đã xác định sứ mạng tiên phong tiếp cận 
+            chuẩn mực giáo dục đại học khu vực và thế giới, ứng dụng công nghệ thông tin trong quản trị đại học đóng góp tích cực 
+            vào sự phát triển nền kinh tế và xã hội tri thức của đất nước. Sứ mạng này hoàn toàn phù hợp và thống nhất với chủ trương, 
+            giải pháp và các mục tiêu của Chương trình đổi mới toàn diện giáo dục đại học mà Đảng và Nhà nước đang triển khai thực hiện.
           """
   inp = {"title": title, "text": text}
-  kws = kw_pipeline(inputs=inp, min_freq=1, ngram_n=(1, 3), top_n=5, diversify_result=False)
 
-  [('Khu di_tích Cổ_Loa', 0.88987315),
-  ('Âu_Lạc thời_kỳ An_Dương_Vương', 0.8680505),
-  ('thành Cổ_Loa', 0.8661723),
-  ('hàng_loạt di_chỉ khảo_cổ_học', 0.8644231),
-  ('lịch_sử xây_dựng thành_luỹ', 0.8375939)]
+  keywords = kw_pipeline(
+          inputs=inp,
+          min_freq=1,
+          ngram_n=(1, 3),
+          top_n=10,
+          diversify_result=True
+      )
+
+  Named Entities list
+  ['Khoa_Công nghệ', 'Trường Đại_học Công_nghệ', 'Đại_học Quốc_gia Hà_Nội', 'Trung_tâm Hợp_tác Đào_tạo và Bồi_dưỡng Cơ_học']
+  
+  Final ngram list
+  ['Bồi_dưỡng Cơ_học trực_thuộc', 'Chương_trình đổi_mới', 'Công_nghệ_thông_tin', 'Cơ_học trực_thuộc Đại_học', 'Giới_thiệu', 'Nghiên_cứu', 'Nhà_nước', 'Nhà_trường', 'Quyết_định', 'Sứ_mạng', 'Thủ_tướng Chính_phủ', 'Trung_tâm Hợp_tác Đào_tạo và Bồi_dưỡng Cơ_học', 'Truyền_thông', 'Trường Đại_học Công_nghệ', 'bồi_dưỡng nhân_tài', 'chuẩn_mực giáo_dục đại_học', 'chủ_trương', 'công_nghệ đáp_ứng nhu_cầu', 'cơ_sở Khoa_Công nghệ', 'cơ_sở phát_huy', 'giáo_dục đại_học khu_vực', 'giải_pháp', 'lĩnh_vực khoa_học công_nghệ', 'mũi_nhọn', 'mục_tiêu', 'nghiên_cứu phát_triển', 'nhiệm_vụ', 'nhu_cầu phát_triển kinh_tế', 'nhân_lực chất_lượng', 'nhân_lực trình_độ đại_học', 'quản_trị đại_học đóng_góp', 'sau_đại_học', 'thành_lập', 'thế_giới', 'thống_nhất', 'tiếp_cận chuẩn_mực giáo_dục', 'triển_khai ứng_dụng khoa_học', 'trực_thuộc Đại_học Quốc_gia', 'xác_định sứ_mạng', 'xã_hội tri_thức', 'Đại_học Quốc_gia Hà_Nội', 'Đảng', 'đào_tạo', 'đáp_ứng nhu_cầu phát_triển', 'đất_nước', 'ứng_dụng công_nghệ_thông_tin']
+
+  Keywords:
+    - Trường Đại_học Công_nghệ: 0.8765
+    - triển_khai ứng_dụng khoa_học: 0.8453
+    - Giới_thiệu: 0.8207
+    - nhu_cầu phát_triển kinh_tế: 0.8358
+    - Trung_tâm Hợp_tác Đào_tạo và Bồi_dưỡng Cơ_học: 0.8000
+    - Đảng: 0.8068
+    - xã_hội tri_thức: 0.8392
+    - chuẩn_mực giáo_dục đại_học: 0.8312
+    - cơ_sở phát_huy: 0.7535
+    - cơ_sở Khoa_Công nghệ: 0.8010
 ```
 
 <a name="diversify"/></a>
