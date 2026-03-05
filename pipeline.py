@@ -64,8 +64,6 @@ class KeywordExtractorPipeline(Pipeline):
                                            self.stopwords)
 
         ngram_list = self.generate_ngram_list(doc_segmentised, filtered_doc_segmentised, ne_ls, ngram_n, min_freq)
-        print("Final ngram list")
-        print(sorted(ngram_list))
 
         ngram_embeddings = compute_ngram_embeddings(self.phobert_tokenizer, self.phobert, ngram_list)
 
@@ -92,18 +90,12 @@ class KeywordExtractorPipeline(Pipeline):
         for n in range(ngram_low, ngram_high + 1):
             ngram_list.update(get_candidate_ngrams(doc_segmentised, filtered_doc_segmentised, n, self.stopwords))
 
-        # print(sorted(ngram_list))
         # Adding named entities ngram list
         ne_ls_segmented = [self.annotator.word_segment(ne)[0] for ne in ne_ls]
-        print("Named Entities list")
-        print(ne_ls_segmented)
         ngram_list.update(ne_ls_segmented)
 
-        # print(sorted(ngram_list))
         # Removing overlapping ngrams
         ngram_list = remove_overlapping_ngrams(ngram_list)
-        # print("Removed overlapping ngrams")
-        # print(sorted(ngram_list))
 
         # Limit ngrams by minimum frequency
         if min_freq > 1:
@@ -119,16 +111,33 @@ class KeywordExtractorPipeline(Pipeline):
 
 
 if __name__ == "__main__":
-    phobert = torch.load(f'{dir_path}/pretrained-models/phobert.pt')
+    from transformers import AutoModel, AutoModelForTokenClassification
+    
+    # Thay vì torch.load(), tải trực tiếp từ HuggingFace
+    print("Loading PhoBERT model from HuggingFace...")
+    phobert = AutoModel.from_pretrained("vinai/phobert-base-v2")
     phobert.eval()
-    ner_model = torch.load(f'{dir_path}/pretrained-models/ner-vietnamese-electra-base.pt')
+    
+    print("Loading NER model from HuggingFace...")
+    ner_model = AutoModelForTokenClassification.from_pretrained("NlpHUST/ner-vietnamese-electra-base")
     ner_model.eval()
+    
     kw_pipeline = KeywordExtractorPipeline(phobert, ner_model)
 
-    text_file_path = f'{dir_path}/test_file.txt'
+    text_file_path = f'{dir_path}/input.txt'
     with open(text_file_path, 'r') as f:
         text = ' '.join([ln.strip() for ln in f.readlines()])
 
     inp = {"text": text, "title": None}
-    kws = kw_pipeline(inputs=inp, min_freq=1, ngram_n=(1, 3), top_n=5, diversify_result=False)
-    print(kws)
+    kws = kw_pipeline(
+        inputs=inp, 
+        min_freq=1, 
+        ngram_n=(1, 3), 
+        top_n=5, 
+        diversify_result=False
+    )
+    
+    print("\nKeywords:")
+    for kw, score in kws:
+        print(f"  - {kw}: {score:.4f}")
+    print()

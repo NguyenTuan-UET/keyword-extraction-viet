@@ -1,4 +1,36 @@
-venv
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+venv.bak/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Project specific
 test_file.txt
 scrap.py
 
+# Models cache
+.cache/
+pretrained-models/*.pt
+!pretrained-models/vncorenlp/
+
+# OS
+.DS_Store
+Thumbs.db

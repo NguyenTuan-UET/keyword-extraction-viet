@@ -1,3 +1,14 @@
+# Core NLP libraries
 torch
-py_vncorenlp
 transformers
+py_vncorenlp
+underthesea
+
+# Machine learning
+scikit-learn
+
+# Scientific computing
+numpy
+
+# UI/Interface
+gradio

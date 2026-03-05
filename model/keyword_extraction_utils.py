@@ -5,21 +5,7 @@ from sklearn.cluster import KMeans
 from model.named_entities import get_named_entities
 
 punctuation = [c for c in punctuation if c != "_"]
-punctuation += ["“", "–", ",", "…", "”", "–"]
-
-
-ethnicity_dict_map = {"H'Mông": "HMông",
-                      "H'mông": "HMông",
-                      "H’mông": "HMông",
-                      "H’Mông": "HMông",
-                      "H’MÔNG": "HMông",
-                      "M'Nông": "MNông",
-                      "M'nông": "MNông",
-                      "M'NÔNG": "MNông",
-                      "M’Nông": "MNông",
-                      "M’NÔNG": "MNông",
-                      "K’Ho": "KHo",
-                      "K’Mẻo": "KMẻo"}
+punctuation += [""", "–", ",", "…", """, "–"]
 
 
 def sub_sentence(sentence):
@@ -51,7 +37,7 @@ def sub_sentence(sentence):
 def check_for_stopwords(ngram, stopwords_ls):
     for ngram_elem in ngram.split():
         for w in stopwords_ls:
-            if ngram_elem == w:  # or ngram_elem.lower() == w:
+            if ngram_elem == w:
                 return True
     return False
 
@@ -109,11 +95,6 @@ def get_doc_embeddings(segmentised_doc, tokenizer, phobert, stopwords):
 
 
 def get_segmentised_doc(nlp, rdrsegmenter, title, doc):
-    for i, j in ethnicity_dict_map.items():
-        if title is not None:
-            title = title.replace(i, j)
-        doc = doc.replace(i, j)
-
     segmentised_doc = rdrsegmenter.word_segment(doc)
 
     if title is not None:
@@ -149,7 +130,6 @@ def compute_ngram_similarity(ngram_list, ngram_embeddings, doc_embedding):
 
     for ngram in ngram_list:
         similarity_score = cosine_similarity(ngram_embeddings[ngram], doc_embedding.T).flatten()[0]
-        # similarity_score = normalised_cosine_similarity(ngram_embeddings[ngram], doc_embedding.T).flatten()[0]
         ngram_similarity_dict[ngram] = similarity_score
 
     return ngram_similarity_dict
@@ -205,7 +185,6 @@ def compute_filtered_text(annotator, title, text):
     filtered_sentences = []
     keep_tags = ['N', 'Np', 'V', 'Nc']
     for key in annotated.keys():
-        # print(key,annotated[key])
         sent = ' '.join([dict_['wordForm'] for dict_ in annotated[key] if dict_['posTag'] in keep_tags])
         filtered_sentences.append(sent)
     return filtered_sentences
@@ -231,13 +210,10 @@ def limit_minimum_frequency(doc_segmentised, ngram_list, min_freq=1):
         count = 0
         for sentence in doc_segmentised:
             sent = sentence.split()
-            # print(sent)
             for i in range(len(sent) - ngram_n + 1):
                 pair = ' '.join(sent[i:i + ngram_n])
-                # print(pair, ngram)
                 if pair == ngram:
                     count += 1
-            # print(ngram, count)
         if count >= min_freq:
             ngram_dict_freq[ngram] = count
 
@@ -249,12 +225,8 @@ def remove_overlapping_ngrams(ngram_list):
     for ngram1 in ngram_list:
         for ngram2 in ngram_list:
             if len(ngram1.split()) > len(ngram2.split()) and (ngram1.startswith(ngram2) or ngram1.endswith(ngram2)):
-                # print(ngram1, ngram2)
-                # print()
                 to_remove.add(ngram2)
 
-    # print("To removed")
-    # print(to_remove)
     for kw in to_remove:
         ngram_list.remove(kw)
     return ngram_list
